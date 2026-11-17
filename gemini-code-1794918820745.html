@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>【○○학교】 세계 눈의 날 눈 건강 퀴즈</title>
+  <!-- 구글 웹폰트 Jua(주아체) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue-main: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-soft: #eff6ff;
+      --blue-border: #bfdbfe;
+      --mint-main: #10b981;
+      --mint-dark: #059669;
+      --mint-soft: #ecfdf5;
+      --mint-border: #a7f3d0;
+      --gray-bg: #f1f5f9;
+      --gray-light: #e2e8f0;
+      --gray-muted: #94a3b8;
+      --text-main: #1e293b;
+      --text-sub: #475569;
+      --red-main: #ef4444;
+      --red-soft: #fef2f2;
+      --red-border: #fecaca;
+      --bg-gradient: linear-gradient(180deg, #e0f2fe 0%, #ecfdf5 50%, #f8fafc 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Jua', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      padding: 16px 14px 40px;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* 상단 헤더 */
+    .header {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .school-badge {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--blue-main);
+      border: 2px solid var(--blue-border);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+    }
+
+    .header h1 {
+      font-size: 1.65rem;
+      color: var(--text-main);
+      letter-spacing: 0.3px;
+    }
+
+    /* 4단계 진행 표시기 */
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: #ffffff;
+      padding: 12px 8px;
+      border-radius: 20px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      margin-bottom: 16px;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: var(--gray-light);
+      color: var(--gray-muted);
+      margin-bottom: 5px;
+      transition: all 0.25s ease;
+    }
+
+    .step-label {
+      font-size: 0.78rem;
+      color: var(--gray-muted);
+      word-break: keep-all;
+      line-height: 1.2;
+    }
+
+    /* 현재 단계: 블루 */
+    .step-item.active .step-circle {
+      background: var(--blue-main);
+      color: #ffffff;
+      box-shadow: 0 0 0 4px var(--blue-soft);
+      transform: scale(1.05);
+    }
+    .step-item.active .step-label {
+      color: var(--blue-main);
+    }
+
+    /* 완료한 단계: 민트색 체크 */
+    .step-item.completed .step-circle {
+      background: var(--mint-main);
+      color: #ffffff;
+    }
+    .step-item.completed .step-label {
+      color: var(--mint-dark);
+    }
+
+    /* 메인 카드 */
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 22px 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .card-title {
+      font-size: 1.38rem;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: 8px;
+      word-break: keep-all;
+    }
+
+    .card-subtitle {
+      font-size: 1rem;
+      color: var(--text-sub);
+      text-align: center;
+      margin-bottom: 20px;
+      word-break: keep-all;
+    }
+
+    /* 화면 인라인 안내 문구 (alert 대체) */
+    .inline-notice {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.98rem;
+      margin-bottom: 14px;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .inline-notice.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .inline-notice.error {
+      background: var(--red-soft);
+      color: #b91c1c;
+      border: 1.5px solid var(--red-border);
+    }
+
+    .inline-notice.success {
+      background: var(--mint-soft);
+      color: var(--mint-dark);
+      border: 1.5px solid var(--mint-border);
+    }
+
+    .inline-notice.info {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      border: 1.5px solid var(--blue-border);
+    }
+
+    /* 입력 폼 */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 1.08rem;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-input {
+      width: 100%;
+      height: 54px;
+      padding: 0 16px;
+      font-size: 1.15rem;
+      border: 2px solid var(--gray-light);
+      border-radius: 16px;
+      background: #f8fafc;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--blue-main);
+      background: #ffffff;
+    }
+
+    /* 버튼 공통 (높이 52px 이상) */
+    .btn {
+      width: 100%;
+      min-height: 54px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.12rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: transform 0.12s ease, background-color 0.2s ease, opacity 0.2s ease;
+      word-break: keep-all;
+      text-align: center;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--blue-main);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--blue-dark);
+    }
+
+    .btn-mint {
+      background: var(--mint-main);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-mint:hover:not(:disabled) {
+      background: var(--mint-dark);
+    }
+
+    .btn-outline-blue {
+      background: var(--blue-soft);
+      color: var(--blue-main);
+      border: 2px solid var(--blue-border);
+    }
+
+    .btn-outline-gray {
+      background: #f8fafc;
+      color: var(--text-sub);
+      border: 2px solid var(--gray-light);
+    }
+
+    .btn:disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    /* 2단계: 인포그래픽 원본 보호 스타일 (절대 필터/자르기/오버레이 금지) */
+    .infographic-wrapper {
+      width: 100%;
+      margin: 12px 0 16px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--gray-light);
+      background: #ffffff;
+    }
+
+    .infographic-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .confirm-box {
+      margin-top: 18px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 18px;
+      border: 2px dashed var(--blue-border);
+      text-align: center;
+    }
+
+    .confirm-question {
+      font-size: 1.12rem;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    /* 3단계: 퀴즈 스타일 */
+    .quiz-progress-wrap {
+      margin-bottom: 18px;
+    }
+
+    .quiz-progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.98rem;
+      color: var(--blue-main);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: var(--gray-light);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-main), var(--mint-main));
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .question-box {
+      background: var(--blue-soft);
+      border: 2px solid var(--blue-border);
+      border-radius: 18px;
+      padding: 18px 16px;
+      margin-bottom: 16px;
+    }
+
+    .question-badge {
+      display: inline-block;
+      background: var(--blue-main);
+      color: #ffffff;
+      font-size: 0.88rem;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      color: var(--text-main);
+      word-break: keep-all;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .options-list.ox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .option-btn {
+      min-height: 56px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 2px solid var(--gray-light);
+      background: #ffffff;
+      color: var(--text-main);
+      font-size: 1.1rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      word-break: keep-all;
+    }
+
+    .ox-grid .option-btn {
+      justify-content: center;
+      font-size: 1.6rem;
+      min-height: 76px;
+    }
+
+    .option-btn.selected {
+      border-color: var(--blue-main);
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* 채점 후 상태: 정답 초록, 내가 고른 오답 빨강 */
+    .option-btn.correct {
+      border-color: var(--mint-main) !important;
+      background: var(--mint-soft) !important;
+      color: #065f46 !important;
+    }
+
+    .option-btn.wrong {
+      border-color: var(--red-main) !important;
+      background: var(--red-soft) !important;
+      color: #991b1b !important;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .explanation-box {
+      display: none;
+      padding: 16px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      font-size: 1.02rem;
+      word-break: keep-all;
+    }
+
+    .explanation-box.show {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .explanation-box.is-correct {
+      background: var(--mint-soft);
+      border: 2px solid var(--mint-border);
+      color: #065f46;
+    }
+
+    .explanation-box.is-wrong {
+      background: var(--red-soft);
+      border: 2px solid var(--red-border);
+      color: #991b1b;
+    }
+
+    .explanation-title {
+      font-size: 1.12rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    /* 4단계: 결과 및 간식 교환권 카드 */
+    .result-hero {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .result-title {
+      font-size: 1.55rem;
+      color: var(--blue-main);
+      margin-bottom: 6px;
+    }
+
+    .score-pill {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--blue-main), var(--mint-main));
+      color: #ffffff;
+      font-size: 1.65rem;
+      padding: 8px 26px;
+      border-radius: 999px;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    }
+
+    .coupon-card {
+      background: linear-gradient(180deg, #eff6ff 0%, #ecfdf5 100%);
+      border: 2.5px dashed var(--blue-main);
+      border-radius: 22px;
+      padding: 20px 16px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .coupon-header {
+      text-align: center;
+      font-size: 1.15rem;
+      color: var(--blue-dark);
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 2px dashed var(--blue-border);
+    }
+
+    .coupon-user {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      font-size: 1.25rem;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      border: 1.5px solid var(--mint-border);
+    }
+
+    .coupon-info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 1.02rem;
+      color: var(--text-main);
+      margin-bottom: 14px;
+    }
+
+    .coupon-info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      word-break: keep-all;
+    }
+
+    .coupon-guide {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 1.05rem;
+      color: var(--mint-dark);
+      border: 1.5px solid var(--mint-border);
+    }
+
+    .btn-claimed {
+      background: #64748b !important;
+      color: #ffffff !important;
+      box-shadow: none !important;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 상단 타이틀 -->
+    <header class="header">
+      <div class="school-badge">【○○학교】 보건실 특별 행사</div>
+      <h1>👁️ 세계 눈의 날 눈 건강 퀴즈</h1>
+    </header>
+
+    <!-- 4단계 진행 표시 -->
+    <nav class="stepper" aria-label="진행 단계">
+      <div class="step-item" id="step-ind-1">
+        <div class="step-circle" id="step-circle-1">1</div>
+        <div class="step-label">참가자 정보</div>
+      </div>
+      <div class="step-item" id="step-ind-2">
+        <div class="step-circle" id="step-circle-2">2</div>
+        <div class="step-label">인포그래픽 확인</div>
+      </div>
+      <div class="step-item" id="step-ind-3">
+        <div class="step-circle" id="step-circle-3">3</div>
+        <div class="step-label">눈 건강 퀴즈</div>
+      </div>
+      <div class="step-item" id="step-ind-4">
+        <div class="step-circle" id="step-circle-4">4</div>
+        <div class="step-label">결과 확인</div>
+      </div>
+    </nav>
+
+    <!-- 1단계: 참가자 정보 -->
+    <section class="card" id="screen-1">
+      <h2 class="card-title">반가워요! 참가자 정보를 입력해 주세요</h2>
+      <p class="card-subtitle">퀴즈 완료 후 보건실 간식 교환권에 표시됩니다.</p>
+
+      <div class="inline-notice error" id="notice-step1" role="alert"></div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-student-id">학번 (숫자만 입력)</label>
+        <input
+          type="text"
+          id="input-student-id"
+          class="form-input"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          maxlength="10"
+          placeholder="예: 20312"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-student-name">이름</label>
+        <input
+          type="text"
+          id="input-student-name"
+          class="form-input"
+          maxlength="20"
+          placeholder="예: 홍길동"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="btn-stack">
+        <button type="button" class="btn btn-primary" id="btn-to-step2">
+          다음 단계로 이동 →
+        </button>
+      </div>
+    </section>
+
+    <!-- 2단계: 인포그래픽 확인 -->
+    <section class="card hidden" id="screen-2">
+      <h2 class="card-title">눈 건강 실천리더가 되기 위한 첫 번째 미션!</h2>
+      <p class="card-subtitle">아래 인포그래픽을 꼼꼼히 읽고 퀴즈에 도전해 보세요.</p>
+
+      <div class="inline-notice info" id="notice-step2-guard"></div>
+
+      <!-- 원본 인포그래픽 이미지 (변형 없이 원본 그대로 출력) -->
+      <div class="infographic-wrapper">
+        <img
+          src="infographic.png"
+          alt="10월 8일은 세계 눈의 날 포스터. 세계 눈의 날 소개(1999년 WHO와 IAPB 지정, 매년 10월 둘째 주 목요일)와 눈 건강을 위한 6가지 약속: 1. 바른 자세로 보기(화면과 눈의 거리 30~50cm 유지), 2. 적절한 조명, 3. 눈의 휴식(20분마다 20초 동안 20ft 약 6m 먼 곳 바라보기), 4. 영양 듬뿍 섭취(비타민A, 루테인, 오메가3), 5. 눈에 좋은 생활습관(충분한 수면과 규칙적인 생활), 6. 정기적인 검진 안내."
+        />
+      </div>
+
+      <!-- 인포그래픽 다운로드 (선택) -->
+      <a
+        href="infographic.png"
+        download="【세계눈의날_눈건강_6가지약속】.png"
+        class="btn btn-outline-blue"
+      >
+        📥 눈 건강 인포그래픽 다운로드 (선택)
+      </a>
+
+      <!-- 확인 체크 영역 -->
+      <div class="confirm-box">
+        <p class="confirm-question">👀 눈 건강 약속을 확인했나요?</p>
+        <button type="button" class="btn btn-mint" id="btn-confirm-infographic">
+          인포그래픽 확인 완료 ✓
+        </button>
+        <div
+          class="inline-notice success"
+          id="notice-infographic-ok"
+          style="margin-top: 12px; margin-bottom: 0;"
+        >
+          좋아요! 눈 건강을 지키는 6가지 약속을 확인했어요.
+        </div>
+      </div>
+
+      <div class="btn-stack">
+        <button type="button" class="btn btn-primary" id="btn-start-quiz" disabled>
+          눈 건강 퀴즈 시작하기 →
+        </button>
+      </div>
+    </section>
+
+    <!-- 3단계: 눈 건강 퀴즈 -->
+    <section class="card hidden" id="screen-3">
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-top">
+          <span id="quiz-progress-text">문제 1 / 4</span>
+          <span id="quiz-score-live">현재 점수: 0점</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="quiz-progress-fill" style="width: 25%;"></div>
+        </div>
+      </div>
+
+      <div class="inline-notice error" id="notice-step3"></div>
+
+      <div class="question-box">
+        <span class="question-badge" id="question-type-badge">OX 퀴즈</span>
+        <div class="question-text" id="question-text"></div>
+      </div>
+
+      <div class="options-list" id="options-container"></div>
+
+      <div class="explanation-box" id="explanation-box">
+        <span class="explanation-title" id="explanation-title"></span>
+        <p id="explanation-text"></p>
+      </div>
+
+      <div class="btn-stack">
+        <button type="button" class="btn btn-primary" id="btn-submit-answer">
+          정답 제출하기
+        </button>
+        <button type="button" class="btn btn-mint hidden" id="btn-next-question">
+          다음 문제로 →
+        </button>
+      </div>
+    </section>
+
+    <!-- 4단계: 결과 확인 -->
+    <section class="card hidden" id="screen-4">
+      <div class="result-hero">
+        <h2 class="result-title">🎉 당신은 눈 건강 실천리더!</h2>
+        <div class="score-pill" id="final-score-display">0 / 100점</div>
+      </div>
+
+      <div class="coupon-card">
+        <div class="coupon-header">🎟️ 【○○학교】 보건실 간식 교환권</div>
+        <div class="coupon-user" id="coupon-user-info">학번 00000 / 홍길동 님</div>
+        <ul class="coupon-info-list">
+          <li>📍 <strong>수령 장소:</strong> 【본관 1층 보건실】</li>
+          <li>⏰ <strong>수령 시간:</strong> 【점심시간 12:30~13:20】</li>
+        </ul>
+        <div class="coupon-guide">
+          📱 이 화면을 보건선생님께 보여 주세요
+        </div>
+      </div>
+
+      <div class="inline-notice success" id="notice-step4"></div>
+
+      <div class="btn-stack">
+        <button type="button" class="btn btn-mint" id="btn-claim-snack">
+          수령 완료 체크
+        </button>
+        <button type="button" class="btn btn-outline-blue" id="btn-review-infographic">
+          인포그래픽 다시 보기
+        </button>
+        <button type="button" class="btn btn-outline-gray" id="btn-restart">
+          처음으로
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'world_sight_day_quiz_state_v1';
+
+      // 고정 4문항 (문항 추가/삭제 금지, 문항당 25점)
+      const QUIZ_DATA = [
+        {
+          id: 1,
+          type: 'OX',
+          question: '1. 20분 동안 화면을 본 후에는 20초 동안 약 6m(20ft) 떨어진 먼 곳을 바라보는 것이 눈 휴식에 좋다.',
+          options: [
+            { value: 'O', label: 'O' },
+            { value: 'X', label: 'X' }
+          ],
+          answer: 'O',
+          explanation: "20분마다 6m 떨어진 먼 곳을 20초간 바라보는 '20-20-20 규칙'은 화면으로 지친 눈의 피로를 풀어 줍니다."
+        },
+        {
+          id: 2,
+          type: '4지 선다',
+          question: '2. 컴퓨터나 스마트폰 화면과 눈 사이의 알맞은 거리는?',
+          options: [
+            { value: '1', label: '① 10~20cm' },
+            { value: '2', label: '② 30~50cm' },
+            { value: '3', label: '③ 80~100cm' },
+            { value: '4', label: '④ 거리는 상관없다' }
+          ],
+          answer: '2',
+          explanation: '화면과 눈 사이는 30~50cm를 유지해야 눈 근육의 긴장을 줄일 수 있습니다.'
+        },
+        {
+          id: 3,
+          type: '4지 선다',
+          question: '3. 인포그래픽에서 소개한 눈 건강에 좋은 영양소가 아닌 것은?',
+          options: [
+            { value: '1', label: '① 비타민 A' },
+            { value: '2', label: '② 루테인' },
+            { value: '3', label: '③ 오메가 3' },
+            { value: '4', label: '④ 탄산음료' }
+          ],
+          answer: '4',
+          explanation: '비타민 A, 루테인, 오메가 3는 눈 건강에 도움이 되지만, 설탕이 많은 탄산음료는 도움이 되지 않습니다.'
+        },
+        {
+          id: 4,
+          type: 'OX',
+          question: "4. '세계 눈의 날'은 실명 예방과 시력 장애에 대한 관심을 높이기 위해 매년 10월 둘째 주 목요일로 지정되어 있다.",
+          options: [
+            { value: 'O', label: 'O' },
+            { value: 'X', label: 'X' }
+          ],
+          answer: 'O',
+          explanation: '1999년 WHO와 IAPB가 중심이 되어 지정한 날로, 매년 10월 둘째 주 목요일입니다.'
+        }
+      ];
+
+      // 기본 상태
+      const defaultState = {
+        currentStep: 1,            // 1, 2, 3, 4
+        studentId: '',
+        studentName: '',
+        infographicConfirmed: false,
+        currentQuestionIndex: 0,   // 0 ~ 3
+        selectedOption: null,
+        questionSubmitted: false,
+        answers: [],               // 각 문항별 { selected, isCorrect }
+        quizCompleted: false,
+        snackClaimed: false,
+        reviewMode: false          // 4단계에서 인포그래픽 다시 보기 모드
+      };
+
+      let state = loadState();
+
+      function loadState() {
+        try {
+          const raw = sessionStorage.getItem(STORAGE_KEY);
+          if (!raw) return { ...defaultState };
+          return { ...defaultState, ...JSON.parse(raw) };
+        } catch (e) {
+          return { ...defaultState };
+        }
+      }
+
+      function saveState() {
+        try {
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          // sessionStorage 접근 제한 환경 대비
+        }
+      }
+
+      // DOM 요소 참조
+      const screens = {
+        1: document.getElementById('screen-1'),
+        2: document.getElementById('screen-2'),
+        3: document.getElementById('screen-3'),
+        4: document.getElementById('screen-4')
+      };
+
+      const inputStudentId = document.getElementById('input-student-id');
+      const inputStudentName = document.getElementById('input-student-name');
+      const noticeStep1 = document.getElementById('notice-step1');
+      const btnToStep2 = document.getElementById('btn-to-step2');
+
+      const noticeStep2Guard = document.getElementById('notice-step2-guard');
+      const btnConfirmInfographic = document.getElementById('btn-confirm-infographic');
+      const noticeInfographicOk = document.getElementById('notice-infographic-ok');
+      const btnStartQuiz = document.getElementById('btn-start-quiz');
+
+      const quizProgressText = document.getElementById('quiz-progress-text');
+      const quizScoreLive = document.getElementById('quiz-score-live');
+      const quizProgressFill = document.getElementById('quiz-progress-fill');
+      const noticeStep3 = document.getElementById('notice-step3');
+      const questionTypeBadge = document.getElementById('question-type-badge');
+      const questionText = document.getElementById('question-text');
+      const optionsContainer = document.getElementById('options-container');
+      const explanationBox = document.getElementById('explanation-box');
+      const explanationTitle = document.getElementById('explanation-title');
+      const explanationText = document.getElementById('explanation-text');
+      const btnSubmitAnswer = document.getElementById('btn-submit-answer');
+      const btnNextQuestion = document.getElementById('btn-next-question');
+
+      const finalScoreDisplay = document.getElementById('final-score-display');
+      const couponUserInfo = document.getElementById('coupon-user-info');
+      const noticeStep4 = document.getElementById('notice-step4');
+      const btnClaimSnack = document.getElementById('btn-claim-snack');
+      const btnReviewInfographic = document.getElementById('btn-review-infographic');
+      const btnRestart = document.getElementById('btn-restart');
+
+      // 히스토리 및 뒤로 가기 우회 방지
+      function syncHistory(step, replace) {
+        const hash = '#step-' + step;
+        try {
+          if (replace) {
+            history.replaceState({ step: step }, '', hash);
+          } else if (location.hash !== hash) {
+            history.pushState({ step: step }, '', hash);
+          }
+        } catch (e) {}
+      }
+
+      function enforceStepGuard(requestedStep) {
+        // 1단계 정보 미입력 시 1단계 강제
+        if (!state.studentId || !state.studentName) {
+          return 1;
+        }
+        // 2단계 인포그래픽 확인 미완료 시 3, 4단계 진입 차단
+        if (requestedStep >= 3 && !state.infographicConfirmed) {
+          showNotice(noticeStep2Guard, '인포그래픽 확인 완료 버튼을 먼저 눌러 주세요!');
+          return 2;
+        }
+        // 퀴즈 미완료 시 4단계 진입 차단
+        if (requestedStep === 4 && !state.quizCompleted) {
+          return state.infographicConfirmed ? 3 : 2;
+        }
+        return requestedStep;
+      }
+
+      window.addEventListener('popstate', function (event) {
+        const targetStep = event.state && event.state.step ? event.state.step : state.currentStep;
+        const safeStep = enforceStepGuard(targetStep);
+
+        if (safeStep !== targetStep) {
+          syncHistory(safeStep, true);
+        }
+        state.currentStep = safeStep;
+        if (safeStep !== 2) {
+          state.reviewMode = false;
+        }
+        saveState();
+        render();
+      });
+
+      window.addEventListener('hashchange', function () {
+        const match = location.hash.match(/^#step-([1-4])$/);
+        const targetStep = match ? Number(match[1]) : state.currentStep;
+        const safeStep = enforceStepGuard(targetStep);
+        if (safeStep !== targetStep) {
+          syncHistory(safeStep, true);
+        }
+        state.currentStep = safeStep;
+        saveState();
+        render();
+      });
+
+      function showNotice(el, message) {
+        el.textContent = message;
+        el.classList.add('show');
+      }
+
+      function hideNotice(el) {
+        el.textContent = '';
+        el.classList.remove('show');
+      }
+
+      function calculateScore() {
+        return state.answers.reduce((acc, item) => acc + (item && item.isCorrect ? 25 : 0), 0);
+      }
+
+      // 4단계 진행 표시 렌더링
+      function renderStepper() {
+        for (let i = 1; i <= 4; i++) {
+          const item = document.getElementById('step-ind-' + i);
+          const circle = document.getElementById('step-circle-' + i);
+          item.classList.remove('active', 'completed');
+
+          const isCompleted =
+            (i === 1 && state.currentStep > 1) ||
+            (i === 2 && state.infographicConfirmed && state.currentStep > 2) ||
+            (i === 3 && state.quizCompleted && state.currentStep > 3) ||
+            (i === 4 && state.quizCompleted && state.currentStep === 4 && state.snackClaimed);
+
+          if (i === state.currentStep) {
+            item.classList.add('active');
+            circle.textContent = i === 4 && state.snackClaimed ? '✓' : String(i);
+          } else if (isCompleted) {
+            item.classList.add('completed');
+            circle.textContent = '✓';
+          } else {
+            circle.textContent = String(i);
+          }
+        }
+      }
+
+      // 1단계 렌더링
+      function renderStep1() {
+        inputStudentId.value = state.studentId;
+        inputStudentName.value = state.studentName;
+        hideNotice(noticeStep1);
+      }
+
+      // 2단계 렌더링
+      function renderStep2() {
+        if (state.infographicConfirmed) {
+          noticeInfographicOk.classList.add('show');
+          btnStartQuiz.disabled = false;
+          btnConfirmInfographic.textContent = '인포그래픽 확인 완료 ✓';
+          hideNotice(noticeStep2Guard);
+        } else {
+          noticeInfographicOk.classList.remove('show');
+          btnStartQuiz.disabled = true;
+          btnConfirmInfographic.textContent = '인포그래픽 확인 완료 ✓';
+        }
+
+        if (state.reviewMode && state.quizCompleted) {
+          btnStartQuiz.textContent = '결과 화면으로 돌아가기 →';
+        } else {
+          btnStartQuiz.textContent = '눈 건강 퀴즈 시작하기 →';
+        }
+      }
+
+      // 3단계 렌더링
+      function renderStep3() {
+        const idx = state.currentQuestionIndex;
+        const q = QUIZ_DATA[idx];
+        const total = QUIZ_DATA.length;
+        const liveScore = calculateScore();
+
+        quizProgressText.textContent = `문제 ${idx + 1} / ${total}`;
+        quizScoreLive.textContent = `현재 점수: ${liveScore}점`;
+        quizProgressFill.style.width = `${((idx + 1) / total) * 100}%`;
+
+        questionTypeBadge.textContent = `${q.type} · 25점`;
+        questionText.textContent = q.question;
+
+        hideNotice(noticeStep3);
+        optionsContainer.innerHTML = '';
+        optionsContainer.className = q.type === 'OX' ? 'options-list ox-grid' : 'options-list';
+
+        q.options.forEach((opt) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'option-btn';
+          btn.textContent = opt.label;
+
+          if (state.selectedOption === opt.value) {
+            btn.classList.add('selected');
+          }
+
+          if (state.questionSubmitted) {
+            btn.disabled = true;
+            if (opt.value === q.answer) {
+              btn.classList.add('correct');
+            } else if (state.selectedOption === opt.value && opt.value !== q.answer) {
+              btn.classList.add('wrong');
+            }
+          } else {
+            btn.addEventListener('click', function () {
+              state.selectedOption = opt.value;
+              hideNotice(noticeStep3);
+              saveState();
+              renderStep3();
+            });
+          }
+
+          optionsContainer.appendChild(btn);
+        });
+
+        if (state.questionSubmitted) {
+          const isCorrect = state.selectedOption === q.answer;
+          explanationBox.className = `explanation-box show ${isCorrect ? 'is-correct' : 'is-wrong'}`;
+          explanationTitle.textContent = isCorrect
+            ? '⭕ 정답입니다! (+25점)'
+            : '❌ 아쉽네요! 정답을 확인해 보세요.';
+          explanationText.textContent = q.explanation;
+
+          btnSubmitAnswer.classList.add('hidden');
+          btnNextQuestion.classList.remove('hidden');
+          btnNextQuestion.textContent =
+            idx < total - 1 ? '다음 문제로 →' : '결과 확인하기 →';
+        } else {
+          explanationBox.className = 'explanation-box';
+          btnSubmitAnswer.classList.remove('hidden');
+          btnNextQuestion.classList.add('hidden');
+        }
+      }
+
+      // 4단계 렌더링
+      function renderStep4() {
+        const score = calculateScore();
+        finalScoreDisplay.textContent = `${score} / 100점`;
+        couponUserInfo.textContent = `학번 ${state.studentId} / ${state.studentName} 님`;
+
+        if (state.snackClaimed) {
+          btnClaimSnack.textContent = '수령 완료 ✓';
+          btnClaimSnack.classList.add('btn-claimed');
+          showNotice(noticeStep4, '간식 수령이 완료 처리되었습니다. 참여해 주셔서 감사합니다!');
+        } else {
+          btnClaimSnack.textContent = '수령 완료 체크';
+          btnClaimSnack.classList.remove('btn-claimed');
+          hideNotice(noticeStep4);
+        }
+      }
+
+      // 전체 화면 렌더링
+      function render() {
+        const safeStep = enforceStepGuard(state.currentStep);
+        if (safeStep !== state.currentStep) {
+          state.currentStep = safeStep;
+          saveState();
+        }
+
+        renderStepper();
+
+        Object.keys(screens).forEach((key) => {
+          screens[key].classList.toggle('hidden', Number(key) !== state.currentStep);
+        });
+
+        if (state.currentStep === 1) renderStep1();
+        if (state.currentStep === 2) renderStep2();
+        if (state.currentStep === 3) renderStep3();
+        if (state.currentStep === 4) renderStep4();
+      }
+
+      // 이벤트 바인딩: 학번 숫자만 입력 허용
+      inputStudentId.addEventListener('input', function (e) {
+        const digitsOnly = e.target.value.replace(/[^0-9]/g, '');
+        if (e.target.value !== digitsOnly) {
+          e.target.value = digitsOnly;
+        }
+        hideNotice(noticeStep1);
+      });
+
+      inputStudentName.addEventListener('input', function () {
+        hideNotice(noticeStep1);
+      });
+
+      // 1단계 -> 2단계
+      btnToStep2.addEventListener('click', function () {
+        const idVal = inputStudentId.value.trim().replace(/[^0-9]/g, '');
+        const nameVal = inputStudentName.value.trim();
+
+        if (!idVal && !nameVal) {
+          showNotice(noticeStep1, '학번과 이름을 모두 입력해 주세요.');
+          inputStudentId.focus();
+          return;
+        }
+        if (!idVal) {
+          showNotice(noticeStep1, '학번을 숫자로 입력해 주세요.');
+          inputStudentId.focus();
+          return;
+        }
+        if (!nameVal) {
+          showNotice(noticeStep1, '이름을 입력해 주세요.');
+          inputStudentName.focus();
+          return;
+        }
+
+        state.studentId = idVal;
+        state.studentName = nameVal;
+        state.currentStep = 2;
+        saveState();
+        syncHistory(2, false);
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // 2단계: 인포그래픽 확인 완료
+      btnConfirmInfographic.addEventListener('click', function () {
+        state.infographicConfirmed = true;
+        hideNotice(noticeStep2Guard);
+        saveState();
+        renderStep2();
+      });
+
+      // 2단계 -> 3단계 (또는 다시 보기 모드일 때 4단계 복귀)
+      btnStartQuiz.addEventListener('click', function () {
+        if (!state.infographicConfirmed) {
+          showNotice(noticeStep2Guard, '인포그래픽 확인 완료 버튼을 먼저 눌러 주세요!');
+          return;
+        }
+
+        if (state.reviewMode && state.quizCompleted) {
+          state.reviewMode = false;
+          state.currentStep = 4;
+          saveState();
+          syncHistory(4, false);
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        state.currentStep = 3;
+        saveState();
+        syncHistory(3, false);
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // 3단계: 정답 제출
+      btnSubmitAnswer.addEventListener('click', function () {
+        if (!state.selectedOption) {
+          showNotice(noticeStep3, '보기를 먼저 선택해 주세요!');
+          return;
+        }
+
+        const idx = state.currentQuestionIndex;
+        const q = QUIZ_DATA[idx];
+        const isCorrect = state.selectedOption === q.answer;
+
+        state.questionSubmitted = true;
+        state.answers[idx] = {
+          selected: state.selectedOption,
+          isCorrect: isCorrect
+        };
+
+        saveState();
+        renderStep3();
+      });
+
+      // 3단계: 다음 문제 또는 결과 확인
+      btnNextQuestion.addEventListener('click', function () {
+        if (state.currentQuestionIndex < QUIZ_DATA.length - 1) {
+          state.currentQuestionIndex += 1;
+          state.selectedOption = null;
+          state.questionSubmitted = false;
+          saveState();
+          renderStep3();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          state.quizCompleted = true;
+          state.currentStep = 4;
+          saveState();
+          syncHistory(4, false);
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+
+      // 4단계: 수령 완료 체크
+      btnClaimSnack.addEventListener('click', function () {
+        state.snackClaimed = !state.snackClaimed;
+        saveState();
+        render();
+      });
+
+      // 4단계: 인포그래픽 다시 보기
+      btnReviewInfographic.addEventListener('click', function () {
+        state.reviewMode = true;
+        state.currentStep = 2;
+        saveState();
+        syncHistory(2, false);
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // 4단계: 처음으로
+      btnRestart.addEventListener('click', function () {
+        state = { ...defaultState };
+        saveState();
+        syncHistory(1, true);
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // 초기 진입 설정
+      const initialSafeStep = enforceStepGuard(state.currentStep);
+      state.currentStep = initialSafeStep;
+      saveState();
+      syncHistory(initialSafeStep, true);
+      render();
+    })();
+  </script>
+</body>
+</html>
